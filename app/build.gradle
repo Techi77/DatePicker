@@ -7,6 +7,10 @@ android {
     namespace 'com.example.datepicker'
     compileSdk 33
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
         applicationId "com.example.datepicker"
         minSdk 24
@@ -41,4 +45,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    implementation("androidx.fragment:fragment:1.5.5")
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
 }
