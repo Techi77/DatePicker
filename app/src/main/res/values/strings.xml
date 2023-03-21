@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DatePicker</string>
+    <string name="fri_feb_24_2023">Fri, Feb 24, 2023</string>
+    <string name="done">Done</string>
+</resources>
