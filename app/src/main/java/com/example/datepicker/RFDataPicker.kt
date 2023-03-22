@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.NumberPicker
 import androidx.fragment.app.Fragment
 import com.example.datepicker.databinding.RfDatePickerBinding
-import java.text.DateFormatSymbols
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -43,18 +43,27 @@ class RFDataPicker : Fragment() {
         val yearPicker = binding.yearDatePicker
         val dayPicker = binding.dayDatePicker
 
-        val shortMonths: Array<String> = DateFormatSymbols().shortMonths
-
+        /*val shortMonths: Array<String> = DateFormatSymbols().months
         for(monthNum in 0..shortMonths.lastIndex){
-            shortMonths[monthNum]=shortMonths[monthNum].uppercase()
+            shortMonths[monthNum]=shortMonths[monthNum].uppercase().substring(0,3)
         }
+        setNumberPicker(monthPicker, shortMonths)*/
+
+        val formatter = SimpleDateFormat("MM", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("LLLL", Locale.getDefault())
+        val shortMonths: Array<String> = Array(12){""}
+        for(monthNum in 0..shortMonths.lastIndex){
+            val mDate = formatter.parse(if (monthNum<9) "0${monthNum+1}" else "${monthNum+1}") ?: "01"
+            shortMonths[monthNum]=dateFormat.format(mDate).substring(0,3).uppercase()
+        }
+        setNumberPicker(monthPicker, shortMonths)
+
 
         val days: Int = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH)
         dayPicker.minValue = 1
         dayPicker.maxValue = days
         dayPicker.value = days
 
-        setNumberPicker(monthPicker, shortMonths)
         val year: Int = cal.get(Calendar.YEAR)
         yearPicker.minValue = year - 150
         yearPicker.maxValue = MAX_YEAR
