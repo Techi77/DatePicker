@@ -62,6 +62,7 @@ class RFDataPicker : Fragment() {
             monthPicker.selectionDividerHeight = 0
             yearPicker.selectionDividerHeight = 0
         }
+        changeDayInMonth()
         monthPicker.setOnValueChangedListener { _, _, _ ->
             changeDayInMonth()
         }
