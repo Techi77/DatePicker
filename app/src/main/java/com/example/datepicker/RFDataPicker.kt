@@ -18,7 +18,7 @@ class RFDataPicker : Fragment() {
         private const val MAX_YEAR = 2099
     }
 
-    private fun setNumberPicker(numberPicker: NumberPicker, numbers: Array<String>) {
+    private fun setMonthPickerValues(numberPicker: NumberPicker, numbers: Array<String>) {
         numberPicker.maxValue = numbers.size - 1
         numberPicker.minValue = 0
         numberPicker.wrapSelectorWheel = true
@@ -41,28 +41,16 @@ class RFDataPicker : Fragment() {
         val cal: Calendar = Calendar.getInstance()
         val monthPicker = binding.monthDatePicker
         val yearPicker = binding.yearDatePicker
-        val dayPicker = binding.dayDatePicker
-
-        /*val shortMonths: Array<String> = DateFormatSymbols().months
-        for(monthNum in 0..shortMonths.lastIndex){
-            shortMonths[monthNum]=shortMonths[monthNum].uppercase().substring(0,3)
-        }
-        setNumberPicker(monthPicker, shortMonths)*/
 
         val formatter = SimpleDateFormat("MM", Locale.getDefault())
-        val dateFormat = SimpleDateFormat("LLLL", Locale.getDefault())
-        val shortMonths: Array<String> = Array(12){""}
-        for(monthNum in 0..shortMonths.lastIndex){
-            val mDate = formatter.parse(if (monthNum<9) "0${monthNum+1}" else "${monthNum+1}") ?: "01"
-            shortMonths[monthNum]=dateFormat.format(mDate).substring(0,3).uppercase()
+        val dateFormat = SimpleDateFormat("LLL", Locale.getDefault())
+        val shortMonths: Array<String> = Array(12) { "" }
+        for (monthNum in 0..shortMonths.lastIndex) {
+            val mDate =
+                formatter.parse(if (monthNum < 9) "0${monthNum + 1}" else "${monthNum + 1}") ?: "01"
+            shortMonths[monthNum] = dateFormat.format(mDate).uppercase()
         }
-        setNumberPicker(monthPicker, shortMonths)
-
-
-        val days: Int = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH)
-        dayPicker.minValue = 1
-        dayPicker.maxValue = days
-        dayPicker.value = days
+        setMonthPickerValues(monthPicker, shortMonths)
 
         val year: Int = cal.get(Calendar.YEAR)
         yearPicker.minValue = year - 150
@@ -70,9 +58,33 @@ class RFDataPicker : Fragment() {
         yearPicker.value = year
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            dayPicker.selectionDividerHeight = 0
+            binding.dayDatePicker.selectionDividerHeight = 0
             monthPicker.selectionDividerHeight = 0
             yearPicker.selectionDividerHeight = 0
+        }
+        monthPicker.setOnValueChangedListener { _, _, _ ->
+            changeDayInMonth()
+        }
+        yearPicker.setOnValueChangedListener { _, _, _ ->
+            changeDayInMonth()
+        }
+    }
+
+    private fun changeDayInMonth() {
+        val dayPicker = binding.dayDatePicker
+        val monthNumber =binding.monthDatePicker.value.toString().toInt() + 1
+        val days: Int = getCountOfDaysInMonth(monthNumber)
+        binding.datePickerText.text = days.toString()
+        dayPicker.minValue = 1
+        dayPicker.maxValue = days
+        dayPicker.value = 1
+    }
+
+    private fun getCountOfDaysInMonth(monthNum: Int): Int {
+        return when (monthNum) {
+            4, 6, 9, 11 -> 30
+            2 -> if (binding.yearDatePicker.value % 4 == 0) 29 else 28
+            else -> 31
         }
     }
 
