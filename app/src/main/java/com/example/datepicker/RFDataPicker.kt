@@ -34,14 +34,6 @@ class RFDataPicker : Fragment() {
 
     private val cal: Calendar = Calendar.getInstance()
 
-    private fun setMonthPickerValues(numberPicker: NumberPicker, numbers: Array<String>) {
-        numberPicker.maxValue = numbers.size - 1
-        numberPicker.minValue = 0
-        numberPicker.wrapSelectorWheel = true
-        numberPicker.displayedValues = numbers
-        numberPicker.value = monthNumberFormatter.format(cal.time).toInt() - 1
-    }
-
     private lateinit var binding: RfDatePickerBinding
 
     override fun onCreateView(
@@ -108,6 +100,9 @@ class RFDataPicker : Fragment() {
     }
 
     private fun settingMonthPicker() {
+        val currentMonthNum =
+            viewModel.dateLiveData.value?.let { monthNumberFormatter.format(it).toInt() - 1 }
+                ?: (monthNumberFormatter.format(cal.time).toInt() - 1)
         val monthPicker = binding.monthDatePicker
         val shortMonths: Array<String> = Array(12) { "" }
         for (monthNum in 0..shortMonths.lastIndex) {
@@ -116,11 +111,18 @@ class RFDataPicker : Fragment() {
                     ?: "01"
             shortMonths[monthNum] = monthNameFormat.format(mDate).uppercase()
         }
-        setMonthPickerValues(monthPicker, shortMonths)
+        monthPicker.maxValue = shortMonths.size - 1
+        monthPicker.minValue = 0
+        monthPicker.wrapSelectorWheel = true
+        monthPicker.displayedValues = shortMonths
+        monthPicker.value = currentMonthNum
     }
 
     private fun settingYearPicker() {
-        val year: Int = cal.get(Calendar.YEAR)
+        val year =
+            viewModel.dateLiveData.value?.let { yearFormatter.format(it).toInt() } ?: cal.get(
+                Calendar.YEAR
+            )
         with(binding) {
             yearDatePicker.minValue = year - 150
             yearDatePicker.maxValue = MAX_YEAR
@@ -135,7 +137,7 @@ class RFDataPicker : Fragment() {
         with(binding) {
             dayDatePicker.minValue = 1
             dayDatePicker.maxValue = days
-            dayDatePicker.value = if (savedDay==null) {
+            dayDatePicker.value = if (savedDay == null) {
                 dayFormatter.format(cal.time).toInt()
             } else if (savedDay <= days) savedDay else {
                 changeDate(days - 1, DAY)
