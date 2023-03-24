@@ -62,8 +62,6 @@ class RFDataPicker : Fragment() {
 
         settingMonthPicker()
         settingYearPicker()
-
-        correctDesign()
         with(binding) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 dayDatePicker.selectionDividerHeight = 0
@@ -91,14 +89,6 @@ class RFDataPicker : Fragment() {
             val textColor =
                 requireContext().getColor(if (scrollState == 0) R.color.mainBlack else R.color.license_dialog_separator)
             view.textColor = textColor
-        }
-    }
-
-    private fun correctDesign() {
-        with(binding) {
-            dayDatePicker.alpha = 0.87F
-            monthDatePicker.alpha = 0.87F
-            yearDatePicker.alpha = 0.87F
         }
     }
 

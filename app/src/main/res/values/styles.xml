@@ -4,6 +4,12 @@
         <item name="colorControlNormal">@color/transparent</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">24sp</item>
+        <item name="theme">@style/NumberPickerCustomText</item>
+
+    </style>
+    <style name="NumberPickerCustomText">
+        <item name="android:textSize">22sp</item> // add if you want to change size
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:alpha">0.87</item>
     </style>
 </resources>
