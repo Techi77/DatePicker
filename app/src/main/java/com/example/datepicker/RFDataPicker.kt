@@ -77,12 +77,12 @@ class RFDataPicker : Fragment() {
             }
             viewModel.dateLiveData.observe(viewLifecycleOwner) { calendar ->
                 datePickerText.text = fullDateFormatter.format(calendar)
+
             }
         }
     }
 
     private fun changeDate(newValue:Int, type: String){
-        if(type== YEAR || type == MONTH) changeDayInMonth()
         val correctNewValue = if (newValue < 9) "0${newValue + 1}" else "${newValue + 1}"
         var day = viewModel.dateLiveData.value?.let { dayFormatter.format(it) } ?: "01"
         var monthNum = viewModel.dateLiveData.value?.let { monthNumberFormatter.format(it) } ?: "01"
@@ -94,6 +94,7 @@ class RFDataPicker : Fragment() {
         }
         val fullDate = fullDateFormatter2.parse("$monthNum/$day/$year") //MM/dd/yyyy
         fullDate?.let { viewModel.setDate(it) }
+        if(type== YEAR || type == MONTH) changeDayInMonth()
     }
 
     private fun settingMonthPicker(){
@@ -123,9 +124,8 @@ class RFDataPicker : Fragment() {
         with(binding) {
             dayDatePicker.minValue = 1
             dayDatePicker.maxValue = days
-            deleteMeIMLog.text = "sd=$savedDay md=$days\n(savedDay<=days)=${savedDay<=days}"
             dayDatePicker.value = if(savedDay<=days) savedDay else {
-                changeDate(days, DAY)
+                changeDate(days-1, DAY)
                 days
             }
         }

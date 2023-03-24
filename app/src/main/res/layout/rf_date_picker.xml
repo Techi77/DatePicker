@@ -53,15 +53,6 @@
         app:layout_constraintTop_toBottomOf="@+id/datePickerText" />
 
     <TextView
-        android:id="@+id/deleteMeIMLog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/delete_me"
-        android:layout_margin="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <TextView
         android:id="@+id/btDone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
