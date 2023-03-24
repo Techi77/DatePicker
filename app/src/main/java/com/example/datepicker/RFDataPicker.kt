@@ -39,6 +39,7 @@ class RFDataPicker : Fragment() {
         numberPicker.minValue = 0
         numberPicker.wrapSelectorWheel = true
         numberPicker.displayedValues = numbers
+        numberPicker.value = monthNumberFormatter.format(cal.time).toInt() - 1
     }
 
     private lateinit var binding: RfDatePickerBinding
@@ -55,6 +56,9 @@ class RFDataPicker : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (viewModel.dateLiveData.value == null) viewModel.setDate(cal.time)
+        viewModel.dateLiveData.observe(viewLifecycleOwner) { calendar ->
+            binding.datePickerText.text = fullDateFormatter.format(calendar)
+        }
 
         settingMonthPicker()
         settingYearPicker()
@@ -70,24 +74,22 @@ class RFDataPicker : Fragment() {
             settingPickerListeners(monthDatePicker, MONTH)
             settingPickerListeners(yearDatePicker, YEAR)
             settingPickerListeners(dayDatePicker, DAY)
-            viewModel.dateLiveData.observe(viewLifecycleOwner) { calendar ->
-                datePickerText.text = fullDateFormatter.format(calendar)
-            }
         }
     }
 
-    private fun settingPickerListeners(picker: NumberPicker, type: String){
+    private fun settingPickerListeners(picker: NumberPicker, type: String) {
         picker.setOnValueChangedListener { _, _, newVal ->
-            changeDate(if(type == MONTH)newVal else newVal - 1, type)
+            changeDate(if (type == MONTH) newVal else newVal - 1, type)
         }
         picker.setOnScrollListener { view, scrollState ->
             changeColorInScrolling(view, scrollState)
         }
     }
 
-    private fun changeColorInScrolling(view:NumberPicker, scrollState: Int){
+    private fun changeColorInScrolling(view: NumberPicker, scrollState: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val textColor = requireContext().getColor(if(scrollState == 0) R.color.mainBlack else R.color.license_dialog_separator)
+            val textColor =
+                requireContext().getColor(if (scrollState == 0) R.color.mainBlack else R.color.license_dialog_separator)
             view.textColor = textColor
         }
     }
@@ -139,11 +141,13 @@ class RFDataPicker : Fragment() {
     private fun changeDayInMonth() {
         val monthNumber = binding.monthDatePicker.value.toString().toInt() + 1
         val days: Int = getCountOfDaysInMonth(monthNumber)
-        val savedDay = viewModel.dateLiveData.value?.let { dayFormatter.format(it).toInt() } ?: 1
+        val savedDay = viewModel.dateLiveData.value?.let { dayFormatter.format(it).toInt() }
         with(binding) {
             dayDatePicker.minValue = 1
             dayDatePicker.maxValue = days
-            dayDatePicker.value = if (savedDay <= days) savedDay else {
+            dayDatePicker.value = if (savedDay==null) {
+                dayFormatter.format(cal.time).toInt()
+            } else if (savedDay <= days) savedDay else {
                 changeDate(days - 1, DAY)
                 days
             }
