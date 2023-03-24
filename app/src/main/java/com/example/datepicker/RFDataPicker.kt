@@ -24,7 +24,8 @@ class RFDataPicker : Fragment() {
 
     private val viewModel: DataPickerViewModel by viewModels()
 
-    private val fullDateFormatter = SimpleDateFormat("E, LLL dd, yyyy", Locale.getDefault()) //Fri, Feb 24, 2023
+    private val fullDateFormatter =
+        SimpleDateFormat("E, LLL dd, yyyy", Locale.getDefault()) //Fri, Feb 24, 2023
     private val fullDateFormatter2 = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     private val dayFormatter = SimpleDateFormat("dd", Locale.getDefault())
     private val monthNumberFormatter = SimpleDateFormat("MM", Locale.getDefault())
@@ -53,62 +54,80 @@ class RFDataPicker : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(viewModel.dateLiveData.value==null)viewModel.setDate(cal.time)
+        if (viewModel.dateLiveData.value == null) viewModel.setDate(cal.time)
 
         settingMonthPicker()
         settingYearPicker()
 
-
-        with(binding){
+        correctDesign()
+        with(binding) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 dayDatePicker.selectionDividerHeight = 0
                 monthDatePicker.selectionDividerHeight = 0
                 yearDatePicker.selectionDividerHeight = 0
             }
             changeDayInMonth()
-            monthDatePicker.setOnValueChangedListener { _, _, newVal ->
-                changeDate(newVal, MONTH)
-            }
-            yearDatePicker.setOnValueChangedListener { _, _, newVal ->
-                changeDate(newVal-1, YEAR)
-            }
-            dayDatePicker.setOnValueChangedListener { _, _, newVal ->
-                changeDate(newVal-1, DAY)
-            }
+            settingPickerListeners(monthDatePicker, MONTH)
+            settingPickerListeners(yearDatePicker, YEAR)
+            settingPickerListeners(dayDatePicker, DAY)
             viewModel.dateLiveData.observe(viewLifecycleOwner) { calendar ->
                 datePickerText.text = fullDateFormatter.format(calendar)
-
             }
         }
     }
 
-    private fun changeDate(newValue:Int, type: String){
+    private fun settingPickerListeners(picker: NumberPicker, type: String){
+        picker.setOnValueChangedListener { _, _, newVal ->
+            changeDate(if(type == MONTH)newVal else newVal - 1, type)
+        }
+        picker.setOnScrollListener { view, scrollState ->
+            changeColorInScrolling(view, scrollState)
+        }
+    }
+
+    private fun changeColorInScrolling(view:NumberPicker, scrollState: Int){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val textColor = requireContext().getColor(if(scrollState == 0) R.color.mainBlack else R.color.license_dialog_separator)
+            view.textColor = textColor
+        }
+    }
+
+    private fun correctDesign() {
+        with(binding) {
+            dayDatePicker.alpha = 0.87F
+            monthDatePicker.alpha = 0.87F
+            yearDatePicker.alpha = 0.87F
+        }
+    }
+
+    private fun changeDate(newValue: Int, type: String) {
         val correctNewValue = if (newValue < 9) "0${newValue + 1}" else "${newValue + 1}"
         var day = viewModel.dateLiveData.value?.let { dayFormatter.format(it) } ?: "01"
         var monthNum = viewModel.dateLiveData.value?.let { monthNumberFormatter.format(it) } ?: "01"
         var year = viewModel.dateLiveData.value?.let { yearFormatter.format(it) } ?: "2023"
-        when(type){
+        when (type) {
             DAY -> day = correctNewValue
             MONTH -> monthNum = correctNewValue
             YEAR -> year = correctNewValue
         }
         val fullDate = fullDateFormatter2.parse("$monthNum/$day/$year") //MM/dd/yyyy
         fullDate?.let { viewModel.setDate(it) }
-        if(type== YEAR || type == MONTH) changeDayInMonth()
+        if (type == YEAR || type == MONTH) changeDayInMonth()
     }
 
-    private fun settingMonthPicker(){
+    private fun settingMonthPicker() {
         val monthPicker = binding.monthDatePicker
         val shortMonths: Array<String> = Array(12) { "" }
         for (monthNum in 0..shortMonths.lastIndex) {
             val mDate =
-                monthNumberFormatter.parse(if (monthNum < 9) "0${monthNum + 1}" else "${monthNum + 1}") ?: "01"
+                monthNumberFormatter.parse(if (monthNum < 9) "0${monthNum + 1}" else "${monthNum + 1}")
+                    ?: "01"
             shortMonths[monthNum] = monthNameFormat.format(mDate).uppercase()
         }
         setMonthPickerValues(monthPicker, shortMonths)
     }
 
-    private fun settingYearPicker(){
+    private fun settingYearPicker() {
         val year: Int = cal.get(Calendar.YEAR)
         with(binding) {
             yearDatePicker.minValue = year - 150
@@ -118,14 +137,14 @@ class RFDataPicker : Fragment() {
     }
 
     private fun changeDayInMonth() {
-        val monthNumber =binding.monthDatePicker.value.toString().toInt() + 1
+        val monthNumber = binding.monthDatePicker.value.toString().toInt() + 1
         val days: Int = getCountOfDaysInMonth(monthNumber)
         val savedDay = viewModel.dateLiveData.value?.let { dayFormatter.format(it).toInt() } ?: 1
         with(binding) {
             dayDatePicker.minValue = 1
             dayDatePicker.maxValue = days
-            dayDatePicker.value = if(savedDay<=days) savedDay else {
-                changeDate(days-1, DAY)
+            dayDatePicker.value = if (savedDay <= days) savedDay else {
+                changeDate(days - 1, DAY)
                 days
             }
         }
