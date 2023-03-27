@@ -6,14 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.datepicker.databinding.RfDatePickerBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class RFDataPicker : Fragment() {
+class RFDataPicker : BottomSheetDialogFragment() {
 
     companion object {
         private const val MAX_YEAR = 2099
@@ -79,7 +79,7 @@ class RFDataPicker : Fragment() {
     private fun changeColorInScrolling(view: NumberPicker, scrollState: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val textColor =
-                requireContext().getColor(if (scrollState == 0) R.color.mainBlack else R.color.license_dialog_separator)
+                requireContext().getColor(if (scrollState == 0) R.color.black else R.color.license_dialog_separator)
             view.textColor = textColor
         }
     }

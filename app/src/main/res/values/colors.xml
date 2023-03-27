@@ -10,5 +10,5 @@
 
     <color name="transparent">#00FFFFFF</color>
     <color name="license_dialog_separator">#2962FF</color>
-    <color name="mainBlack">#000000</color>
+    <color name="blackTransparent">#40000000</color>
 </resources>
