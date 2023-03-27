@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.example.datepicker.databinding.RfDatePickerBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -64,6 +65,11 @@ class RFDataPicker : BottomSheetDialogFragment() {
             settingPickerListeners(monthDatePicker, MONTH)
             settingPickerListeners(yearDatePicker, YEAR)
             settingPickerListeners(dayDatePicker, DAY)
+        }
+        binding.background.setOnClickListener {
+            Toast.makeText(context, "background.setOnClickListener", Toast.LENGTH_SHORT).show()
+        }
+        binding.dialog.setOnClickListener {
         }
     }
 
